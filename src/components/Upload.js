@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { ref, uploadBytes, getDownloadURL, } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../firebase';
-import { v4 } from 'uuid';
-import { client } from "@gradio/client";
+import { v4 as uuidv4 } from 'uuid'; // Correct import for v4
+// import { Client } from "@gradio/client"; // Correct import for Gradio Client
 
 const Upload = () => {
     const [imgSrc, setImgSrc] = useState(null);
@@ -21,29 +21,27 @@ const Upload = () => {
             return;
         }
 
-        const imageRef = ref(storage, `images/${v4()}_${imgSrc.name}`);
-        // storing img
-        const BytesData = await uploadBytes(imageRef, imgSrc);
-        // generating img url from firebase
-        const url = await getDownloadURL(imageRef)
-        
-        console.log('Image uploaded successfully:', BytesData);
-        console.log("URL fetched successfully: ", url)
+        const imageRef = ref(storage, `images/${uuidv4()}_${imgSrc.name}`);
 
         try {
-            const response_0 = await fetch(url);
-            const exampleImage = await response_0.blob();
-    
-            const app = await client("https://ahmad4raza-flying-shakespeare.hf.space/");
-            const result = await app.predict("/predict", [
-                exampleImage,
-            ]);
-    
-            console.log(result.data);
-    
+            // Upload the image to Firebase Storage
+            await uploadBytes(imageRef, imgSrc);
+
+            // Get the download URL of the uploaded image
+            const url = await getDownloadURL(imageRef);
+
+            console.log('Image uploaded successfully:', url);
+
+            // Create a Gradio client and make a prediction
+            // const app = new Client("https://ahmad4raza-flying-shakespeare.hf.space/");
+            // const result = await app.predict({
+            //     "input": [url], // Pass the URL as input
+            // });
+
+            // console.log(result);
+
         } catch (error) {
             console.error(error.message);
-            
         }
     };
 
@@ -77,6 +75,6 @@ const Upload = () => {
             </div>
         </div>
     );
-};
+}
 
 export default Upload;
