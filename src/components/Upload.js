@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../firebase';
 import { v4 as uuidv4 } from 'uuid'; // Correct import for v4
-// import { Client } from "@gradio/client"; // Correct import for Gradio Client
+import { client } from "@gradio/client"; // Correct import for Gradio Client
 
 const Upload = () => {
     const [imgSrc, setImgSrc] = useState(null);
@@ -33,12 +33,12 @@ const Upload = () => {
             console.log('Image uploaded successfully:', url);
 
             // Create a Gradio client and make a prediction
-            // const app = new Client("https://ahmad4raza-flying-shakespeare.hf.space/");
-            // const result = await app.predict({
-            //     "input": [url], // Pass the URL as input
-            // });
+            const app = new client("https://ahmad4raza-flying-shakespeare.hf.space/");
+            const result = await app.predict({
+                "input": [url], // Pass the URL as input
+            });
 
-            // console.log(result);
+            console.log(result);
 
         } catch (error) {
             console.error(error.message);
